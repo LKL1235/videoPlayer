@@ -37,7 +37,7 @@ const init=()=>{
     alert("您的浏览器不支持socket")
   }else{
     // 实例化socket
-    socket = new WebSocket("ws://139.9.32.27:8080/ws/"+user.$state.roomId+'/'+user.$state.username)
+    socket = new WebSocket("ws://139.9.32.27:9555/ws/"+user.$state.roomId+'/'+user.$state.username)
     // 监听socket连接
     socket.onopen = open
     // 监听socket错误信息
