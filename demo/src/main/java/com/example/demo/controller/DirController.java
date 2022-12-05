@@ -31,7 +31,6 @@ public class DirController {
                 String s=f.getName();
                 DirDTO dirDTO1=new DirDTO(s);
                 list.add(dirDTO1);
-                System.out.println(s);
             }
         }
         return list;

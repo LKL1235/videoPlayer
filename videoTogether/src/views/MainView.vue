@@ -1,22 +1,20 @@
 <template>
-  <div>
-  <button @click="createRoom">创建房间</button>
+
+  <div class="div1">
+    <span class="a1">请输入一个好听的名字</span>
+    <input class="input1" v-model="username" >
   </div>
-  <div>
-  <button @click="joinRoom">加入房间</button>
+  <div class="div2" >
+    <span class="a1">请输入房间号</span>
+    <input class="input2" v-model="roomId" >
   </div>
-  <div style="margin-top: 15%;">
-  <a style="color: #FFFFFF;margin-left: 33%">请输入一个好听的名字</a>
+
+  <div class="div3">
+    <button class="button1" @click="createRoom">创建房间</button>
+    <button class="button2" @click="joinRoom">加入房间</button>
   </div>
-  <div>
-  <input v-model="username" style="margin-top: 5%;margin-left: 31%">
-  </div>
-  <div style="margin-top: 15%;">
-    <a style="color: #FFFFFF;margin-left: 33%">请输入房间号</a>
-  </div>
-  <div>
-    <input v-model="roomId" style="margin-top: 5%;margin-left: 31%">
-  </div>
+
+
 </template>
 
 <script setup lang="ts">
@@ -29,28 +27,111 @@ const router=useRouter()
 const username=ref("")
 const roomId=ref(0)
 const createRoom = () => {
-  user.$state.username=username.value
-  user.$state.roomId=roomId.value
-  router.push('/player')
+  if(username.value!='') {
+    user.$state.username = username.value
+    user.$state.roomId = roomId.value
+    router.push('/player')
+  }else{
+    alert('请输入用户名')
+  }
 }
 
 const joinRoom=()=>{
-  user.$state.username=username.value
-  user.$state.roomId=roomId.value
-  router.push('/client')
+  if(username) {
+    user.$state.username = username.value
+    user.$state.roomId = roomId.value
+    router.push('/client')
+  }else {
+    alert('请输入用户名')
+  }
 }
 
 </script>
 
 <style scoped>
-button{
-  margin-left: 30%;
+.div1{
   margin-top: 20%;
+}
+.div2{
+  margin-top: 5%;
+}
+.div3{
+  margin-top: 70%;
+}
+.button1{
+
   width: 200px;
   height: 100px;
   background-color: #214586;
   border-radius: 5px;
   border-style: none;
   color: #FFFFFF;
+  float: left;
+}
+.button2{
+  margin-left: 10%;
+  width: 200px;
+  height: 100px;
+  background-color: #214586;
+  border-radius: 5px;
+  border-style: none;
+  color: #FFFFFF;
+
+}
+.a1{
+  color: #FFFFFF;
+  margin-left: 30%;
+  font-size: 20px;
+}
+.input1{
+  margin-left: 31%;
+  height: 25px;
+
+}
+.input2{
+   margin-left: 31%;
+  height: 25px;
+ }
+@media  screen and (min-width: 1200px) {
+  .div1{
+    margin-top: 20%;
+  }
+  .div2{
+    margin-top: 5%;
+  }
+  .div3{
+    margin-top: 5%;
+  }
+  .button1{
+    margin-left: 30%;
+    width: 200px;
+    height: 100px;
+    background-color: #214586;
+    border-radius: 5px;
+    border-style: none;
+    color: #FFFFFF;
+    float: left;
+  }
+  .button2{
+    margin-left: 10%;
+    width: 200px;
+    height: 100px;
+    background-color: #214586;
+    border-radius: 5px;
+    border-style: none;
+    color: #FFFFFF;
+
+  }
+  .a1{
+    color: #FFFFFF;
+    margin-left: 35%;
+    float: bottom;
+  }
+  .input1{
+    margin-left: 5%
+  }
+  .input2{
+    margin-left: 10%;
+  }
 }
 </style>

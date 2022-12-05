@@ -1,5 +1,14 @@
 <template>
-  <video preload controls :src="src" style="margin-top: 5%" height="300" id="myVideo"></video>
+  <div >
+    <span class="span">当前集数为{{url.value}}</span>
+  </div>
+  <div>
+  <video :src="src" style="margin-top: 5%" height="300" id="myVideo"></video>
+  </div>
+  <div>
+    <textarea disabled v-model="tips" class="tips">
+    </textarea>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -44,38 +53,52 @@ const init=()=>{
     socket.onerror = error
     // 监听socket消息
     socket.onmessage = getMessage
+
+    socket.onclose=close
   }
 }
 const open= ()=> {
   console.log("socket连接成功")
+  tips.value=tips.value+"连接房间成功"
 }
 const error= ()=>  {
   console.log("连接错误")
 }
 const getMessage= (msg)=>  {
   let data = JSON.parse(msg.data)
+  tips.value=data.tips
   if(data.isLive){
     createdPlay()
   }else{
     if(url.value===data.url){
-      let Video=document.getElementById("myVideo")
+      var Video=document.getElementById("myVideo")
       if(Video.currentTime!=data.time){
-        console.log(Video.currenTime)
+        console.log("getMassage"+Video.currenTime)
         document.getElementById("myVideo").currentTime=data.time
+        document.getElementById("myVideo").play()
+      }
+      console.log(data.isPause)
+      if(data.isPause){
+        document.getElementById("myVideo").pause()
+        console.log("isPause暂停")
+      }else {
+        document.getElementById("myVideo").play()
+        console.log("isPause播放")
       }
     }else {
-      url.value=data.url
-      src.value=baseVideoUrl+data.url
+      if(data.url!="") {
+        url.value = data.url
+        src.value = baseVideoUrl + data.url
+        document.getElementById("myVideo").currentTime=data.time
+        document.getElementById("myVideo").play()
+      }
     }
   }
 }
-const send= ()=> {
-  let Video=document.getElementById("myVideo")
-  let message={url:'url',time:Video.currentTime}
-  socket.send(JSON.stringify(message))
-}
+
 const close= ()=>  {
   console.log("socket已经关闭")
+  tips.value=tips.value+'\n连接断开了'
 }
 onMounted (()=>{
   // 初始化
@@ -85,5 +108,17 @@ onMounted (()=>{
 </script>
 
 <style>
+.tips{
+  position: fixed;top:51%;left: 20%;height: 130px;width: 350px
+}
 
+@media screen and (min-width: 1200px){
+  .tips{
+    position: relative;
+    top:10px;
+    left: 33%;
+    height: 300px;
+    width: 500px;
+  }
+}
 </style>

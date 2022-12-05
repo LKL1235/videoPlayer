@@ -3,6 +3,7 @@ import GlobalView from "@/views/GlobalView.vue"
 import VideoPlayer from "@/components/VideoPlayer.vue"
 import Client from "@/components/Client.vue"
 import MainView from "@/views/MainView.vue"
+import {useUserStore} from "@/stores/userStore";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,5 +36,19 @@ const router = createRouter({
     }
   ]
 })
+let store:any=null
+router.beforeEach((to, from,next) => {
+  if (store === null) {
+    store = useUserStore();
+  }
+  if(to.path === "/"|| to.path === "/main") {
+    next()
+  }
+  if(store.roomId==0&&store.username==''){
+    return next({ name: 'main' })
+  }else {
+    next()
+  }
 
+})
 export default router

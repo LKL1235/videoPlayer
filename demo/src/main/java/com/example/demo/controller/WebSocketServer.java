@@ -37,7 +37,20 @@ public class WebSocketServer {
             users.add(username);
             roomMap.put(roomId,users);
         }
-        log.info("有新用户加入，username={}, 当前在线人数为：{}", username, sessionMap.size());
+        List<Session> sessionList=new ArrayList<>();
+        roomMap.get(roomId).forEach(item->sessionList.add(sessionMap.get(item)));
+        if (!sessionList.isEmpty()) {
+            // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
+            // {"from": "zhang", "text": "hello"}
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.set("url", "");  // from 是 zhang
+            jsonObject.set("time", "");  // text 同上面的text
+            jsonObject.set("isLive", false);
+            jsonObject.set("tips", "用户" + username + "加入了");
+            jsonObject.set("isPause",false);
+            sessionList.forEach(item -> this.sendMessage(jsonObject.toString(), item));
+        }
+            log.info("有新用户加入，username={}, 当前在线人数为：{}", username, sessionMap.size());
 
     }
     /**
@@ -62,6 +75,8 @@ public class WebSocketServer {
         String url = obj.getStr("url"); // to表示发送给哪个用户，比如 admin
         String time = obj.getStr("time"); // 发送的消息文本  hello
         boolean isLive=(boolean)obj.get("isLive");
+        String tips=obj.getStr("tips");
+        boolean isPause=(boolean)obj.get("isPause");
         // {"to": "admin", "text": "聊天文本"}
 
         List<Session> sessionList=new ArrayList<>();
@@ -73,6 +88,8 @@ public class WebSocketServer {
             jsonObject.set("url", url);  // from 是 zhang
             jsonObject.set("time", time);  // text 同上面的text
             jsonObject.set("isLive",isLive);
+            jsonObject.set("tips",tips);
+            jsonObject.set("isPause",isPause);
             sessionList.forEach(item->this.sendMessage(jsonObject.toString(), item));
 
             log.info("发送给用户username={}，消息：{}", sessionList, jsonObject.toString());
