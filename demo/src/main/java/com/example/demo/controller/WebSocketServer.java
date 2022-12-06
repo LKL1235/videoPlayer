@@ -46,7 +46,7 @@ public class WebSocketServer {
             jsonObject.set("url", "");  // from 是 zhang
             jsonObject.set("time", "");  // text 同上面的text
             jsonObject.set("isLive", false);
-            jsonObject.set("tips", "用户" + username + "加入了");
+            jsonObject.set("tips", "用户" + username + "加入了,当前房间人数为："+roomMap.get(roomId).size());
             jsonObject.set("isPause",false);
             sessionList.forEach(item -> this.sendMessage(jsonObject.toString(), item));
         }
@@ -81,6 +81,7 @@ public class WebSocketServer {
 
         List<Session> sessionList=new ArrayList<>();
         roomMap.get(roomId).forEach(item->sessionList.add(sessionMap.get(item)));
+        sessionList.remove(session);
         if (!sessionList.isEmpty()) {
             // 服务器端 再把消息组装一下，组装后的消息包含发送人和发送的文本内容
             // {"from": "zhang", "text": "hello"}

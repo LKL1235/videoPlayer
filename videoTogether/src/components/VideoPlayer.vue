@@ -15,7 +15,10 @@
     </div>
 
     <div class="div_select">
-      <select id="sdir" class="select">
+      <select id="ldir" class="select1" @change="fdirChange">
+        <option v-for="index in option1" :value="index.url">{{index.url}}</option>
+      </select>
+      <select id="sdir" class="select2">
         <option v-for="index in option" :value="index.url">{{index.url}}</option>
       </select>
       <button class="button_change" @click="change">选集</button>
@@ -43,9 +46,17 @@ const isLive=ref(false)
 const src=ref("")
 const user=useUserStore()
 const isPause=ref(false)
+const Fdir=ref("")
 var socket
 const option=ref([
-    "mv2.mp4"
+  {
+    url: "mv2.mp4"
+  }
+])
+const option1=ref([
+  {
+    url: ""
+  }
 ])
 const play=()=>{
   isPause.value=false
@@ -58,14 +69,20 @@ const pause = () => {
 const end = () => {
   var index=document.getElementById("sdir").selectedIndex ;
   document.getElementById("sdir").selectedIndex+=1
-  console.log(document.getElementById("sdir").selectedIndex)
-  url.value=option.value[index+1].url
+  if(Fdir.value!=""){
+    url.value=Fdir.value+'/'+option.value[index+1].url
+  }else {
+    url.value=option.value[index+1].url
+  }
   src.value=baseVideoUrl+url.value
   send()
 }
 const change = () => {
-  url.value=document.getElementById("sdir").value
-  console.log('url:'+url.value+"++"+document.getElementById("sdir").value)
+  if(Fdir.value!=""){
+    url.value=Fdir.value+'/'+document.getElementById("sdir").value
+  }else {
+    url.value=document.getElementById("sdir").value
+  }
 }
 const baseVideoUrl="http://139.9.32.27/src/video/"
 const baseLiveUrl="http://139.9.32.27/live?port=1935&app=live&stream=video"
@@ -75,7 +92,7 @@ const load = () => {
       createdPlay()
    }else {
       tips.value+="\n当前播放视频为："+url.value
-      src.value=baseVideoUrl+url.value
+      src.value = baseVideoUrl + url.value
       console.log("src:"+src.value)
    }
 }
@@ -118,26 +135,24 @@ const error= ()=>  {
   console.log("连接错误")
 }
 const getMessage= (msg)=>  {
-  let data = JSON.parse(msg.data)
+  console.log("getMessage:收到消息")
+  var data = JSON.parse(msg.data)
   tips.value=data.tips
   if(data.isLive){
     createdPlay()
   }else{
-     if(url===data.url && data.url!=''){
-          let Video=document.getElementById("myVideo")
-          if(Video.currentTime!=data.time){
-          Video.currenTime=data.time
-       }
-      }else {
-       if(data.ulr!='') {
+     if(url.value===data.url && data.url!=''){
+
+      }else if(data.url!=="") {
          src.value = baseVideoUrl + data.url
-       }
-    }
+    }else {
+       console.log("getMessage:发送")
+       send()
+     }
   }
 }
 const send= ()=> {
   tips.value=tips.value+"\n房间已同步"
-  if(isPause.value)  {console.log('暂停')}else{console.log('播放')}
   let Video=document.getElementById("myVideo")
   let message={url:url.value,time:Video.currentTime,isLive:isLive.value,tips:tips.value,isPause:isPause.value}
   socket.send(JSON.stringify(message))
@@ -147,16 +162,41 @@ const close= ()=>  {
   tips.value=tips.value+'\n连接断开了'
 }
 
-const getDir = () => {
-  axios.get("/sdir").then((respon)=>{
+const fdirChange = () => {
+  Fdir.value=document.getElementById("ldir").value
+  getDir(Fdir.value)
+}
+
+const getDir = (dir:string) => {
+  if(dir!="") {
+    axios.get("/sdir/" + dir).then((respon) => {
+      console.log(respon.data)
+      option.value = respon.data
+    }).catch(error => {
+      console.log(error)
+    })
+  }else {
+    axios.get("/sdir").then((respon) => {
+      console.log(respon.data)
+      option.value = respon.data
+    }).catch(error => {
+      console.log(error)
+    })
+  }
+}
+const listDir = () => {
+  axios.get("/ldir").then((respon)=>{
     console.log(respon.data)
-    option.value=respon.data
+    respon.data.forEach(item=>option1.value.push(item))
   }).catch(error=>{console.log(error)})
+  var index=document.getElementById("ldir").selectedIndex
+  Fdir.value=option1.value[index].url
+  getDir(Fdir.value)
 }
 onMounted (()=>{
   // 初始化
   init()
-  getDir()
+  listDir()
 })
 </script>
 
@@ -201,9 +241,13 @@ onMounted (()=>{
   border-radius: 5px;
   border-style: none;
 }
-.select{
-  margin-left: 20%;
-  margin-right: 10%;
+.select1{
+  margin-left: 15%;
+
+}
+.select2{
+  margin-left: 5%;
+  margin-right: 5%;
 }
 .tips1{
   margin-left: 20%;
@@ -241,7 +285,7 @@ onMounted (()=>{
     margin-top: 1%;
   }
   .button_change{
-    margin-left: 5%;
+    margin-left: 0%;
     height: 50px;
     width: 150px;
     background-image: linear-gradient(to right,#A7E8FF, #3ba7e8);
@@ -257,9 +301,12 @@ onMounted (()=>{
     border-radius: 5px;
     border-style: none;
   }
-  .select{
+  .select1{
     margin-left: 35%;
-    margin-right: 10%;
+  }
+  .select2{
+    margin-left: 5%;
+    margin-right: 5%;
   }
   .tips1{
     margin-left: 35%;

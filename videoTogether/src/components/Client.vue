@@ -3,7 +3,7 @@
     <span class="span">当前集数为{{url.value}}</span>
   </div>
   <div>
-  <video :src="src" style="margin-top: 5%" height="300" id="myVideo"></video>
+  <video autoplay :src="src" style="margin-top: 5%" height="300" id="myVideo"></video>
   </div>
   <div>
     <textarea disabled v-model="tips" class="tips">
@@ -73,11 +73,9 @@ const getMessage= (msg)=>  {
     if(url.value===data.url){
       var Video=document.getElementById("myVideo")
       if(Video.currentTime!=data.time){
-        console.log("getMassage"+Video.currenTime)
         document.getElementById("myVideo").currentTime=data.time
         document.getElementById("myVideo").play()
       }
-      console.log(data.isPause)
       if(data.isPause){
         document.getElementById("myVideo").pause()
         console.log("isPause暂停")
@@ -89,6 +87,7 @@ const getMessage= (msg)=>  {
       if(data.url!="") {
         url.value = data.url
         src.value = baseVideoUrl + data.url
+        console.log("src:"+src.value)
         document.getElementById("myVideo").currentTime=data.time
         document.getElementById("myVideo").play()
       }
