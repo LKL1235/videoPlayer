@@ -12,6 +12,6 @@ const user=useUserStore()
 <style scoped>
 h1{
   color: #FFFFFF;
-  margin-left: 45%;
+  margin-left: 35%;
 }
 </style>

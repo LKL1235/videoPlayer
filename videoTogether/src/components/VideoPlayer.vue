@@ -105,7 +105,6 @@ const createdPlay=()=>{
       type: 'flv',
       url: "http://139.9.32.27/live?port=1935&app=live&stream=video",
     });
-
     flvPlayer.attachMediaElement(videoElement);
     flvPlayer.load();
     flvPlayer.play();
@@ -202,7 +201,7 @@ onMounted (()=>{
 
 <style>
 .span{
-  margin-left: 45%;
+  margin-left: 35%;
   color: #FFFFFF;
   font-size: 24px;
 }
