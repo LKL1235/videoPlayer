@@ -57,7 +57,8 @@ public class WebSocketServer {
      * 连接关闭调用的方法
      */
     @OnClose
-    public void onClose(Session session, @PathParam("username") String username) {
+    public void onClose(Session session,@PathParam("roomId") Integer roomId, @PathParam("username") String username) {
+        roomMap.get(roomId).remove(username);
         sessionMap.remove(username);
         log.info("有一连接关闭，移除username={}的用户session, 当前在线人数为：{}", username, sessionMap.size());
     }
